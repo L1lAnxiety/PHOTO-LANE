@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LANE'S PHOTO GALLERY</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #000000;
+      color: #ffffff;
+      font-family: "Arial Black", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* --- НАДПИСИ СВЕРХУ --- */
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    .header h1 {
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      line-height: 1.1;
+    }
+
+    .header h2 {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    /* --- БЛОК ГАЛЕРЕИ (Кнопки + Фотка) --- */
+    .gallery-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px; 
+      width: 100%;
+      max-width: 600px;
+    }
+
+    /* --- СЛАЙДЕР (Пропорция 3:4) --- */
+    .slider-wrapper {
+      position: relative;
+      width: 70vw; 
+      max-width: 380px; 
+      aspect-ratio: 3 / 4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transform: scale(0.95);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* --- КНОПКИ ПЕРЕКЛЮЧЕНИЯ --- */
+    .btn {
+      flex-shrink: 0; 
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 22px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease, transform 0.2s ease;
+      z-index: 10;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.08); 
+    }
+
+    /* --- УПРАВЛЕНИЕ (Точки и счетчик) --- */
+    .controls {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    .dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dot.active {
+      background: #ffffff;
+      transform: scale(1.3);
+    }
+
+    .counter {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 1.5px;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* --- НИКНЕЙМ ССЫЛКА СНИЗУ --- */
+    .footer {
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px; /* Пробел между BY и ником */
+      font-size: 22px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .footer span {
+      color: #ffffff; /* Слово BY белое */
+    }
+
+    .nickname {
+      color: #5c1616; /* Ник цветной */
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .nickname:hover {
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ЗАГОЛОВОК -->
+  <div class="header">
+    <h1>LANE'S PHOTO</h1>
+    <h2>GALLERY</h2>
+  </div>
+
+  <!-- ОБЩИЙ РЯД ДЛЯ КНОПОК И ФОТО -->
+  <div class="gallery-row">
+    
+    <button class="btn prev" id="prevBtn">&#10094;</button>
+
+    <div class="slider-wrapper" id="slider">
+      <div class="slide active"><img src="https://files.catbox.moe/ec19za.JPG" alt="Photo 1"></div>
+      <div class="slide"><img src="https://files.catbox.moe/nokfkj.PNG" alt="Photo 2"></div>
+      <div class="slide"><img src="https://files.catbox.moe/2pvzua.PNG" alt="Photo 3"></div>
+      <div class="slide"><img src="https://files.catbox.moe/plge5c.PNG" alt="Photo 4"></div>
+      <div class="slide"><img src="https://files.catbox.moe/xd41lk.PNG" alt="Photo 5"></div>
+    </div>
+
+    <button class="btn next" id="nextBtn">&#10095;</button>
+
+  </div>
+
+  <!-- УПРАВЛЕНИЕ -->
+  <div class="controls">
+    <div class="dots" id="dotsContainer"></div>
+    <div class="counter" id="counter">1 / 5</div>
+  </div>
+
+  <!-- КЛИКАБЕЛЬНЫЙ НИК СНИЗУ -->
+  <div class="footer">
+    <span>BY</span>
+    <!-- Вставляй свою ссылку ниже -->
+    <a href="https://janitorai.com/profiles/ffca0510-2984-4642-862a-869919a77b2e_profile-of-l-1-lanxiety" target="_blank" class="nickname">L1IANXIETY</a>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const dotsContainer = document.getElementById('dotsContainer');
+    const counter = document.getElementById('counter');
+    const slider = document.getElementById('slider');
+
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    slides.forEach((_, idx) => {
+      const dot = document.createElement('div');
+      dot.classList.add('dot');
+      if (idx === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => goToSlide(idx));
+      dotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.dot');
+
+    function updateSlider() {
+      slides.forEach((slide, idx) => {
+        slide.classList.toggle('active', idx === currentIndex);
+      });
+      dots.forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === currentIndex);
+      });
+      counter.textContent = `${currentIndex + 1} / ${totalSlides}`;
+    }
+
+    function nextSlide() {
+      currentIndex = (currentIndex + 1) % totalSlides;
+      updateSlider();
+    }
+
+    function prevSlide() {
+      currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+      updateSlider();
+    }
+
+    function goToSlide(index) {
+      currentIndex = index;
+      updateSlider();
+    }
+
+    nextBtn.addEventListener('click', nextSlide);
+    prevBtn.addEventListener('click', prevSlide);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    let touchStartX = 0;
+    slider.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    slider.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      const diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 40) {
+        if (diff > 0) nextSlide();
+        else prevSlide();
+      }
+    }, { passive: true });
+  </script>
+</body>
+</html>
